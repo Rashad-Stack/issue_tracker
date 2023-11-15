@@ -3,7 +3,10 @@ import prisma from "@/prisma/client";
 import statusCodes from "http-status-codes";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function POST(request: NextRequest) {
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const body = await request.json();
   const validation = issueSchema.safeParse(body);
 
@@ -13,14 +16,30 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  const newIssue = await prisma.issue.create({
+  const issue = await prisma.issue.findUnique({
+    where: {
+      id: parseInt(params.id),
+    },
+  });
+
+  if (!issue) {
+    return NextResponse.json(
+      { error: "Issue not found" },
+      {
+        status: statusCodes.NOT_FOUND,
+      },
+    );
+  }
+
+  const updatedIssue = await prisma.issue.update({
+    where: {
+      id: parseInt(params.id),
+    },
     data: {
       title: validation.data.title,
       description: validation.data.description,
     },
   });
 
-  return NextResponse.json(newIssue, {
-    status: statusCodes.CREATED,
-  });
+  return NextResponse.json(updatedIssue);
 }
