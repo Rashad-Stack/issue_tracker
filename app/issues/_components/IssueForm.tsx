@@ -13,11 +13,8 @@ import dynamic from "next/dynamic";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import SimpleMde from "react-simplemde-editor";
 import { z } from "zod";
-
-const SimpleMde = dynamic(() => import("react-simplemde-editor"), {
-  ssr: false,
-});
 
 type IssusFormData = z.infer<typeof issueSchema>;
 
