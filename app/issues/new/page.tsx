@@ -1,6 +1,7 @@
 "use client";
 
 import ErrorMessage from "@/app/components/ErrorMessage";
+import Spinner from "@/app/components/Spinner";
 import { createIssueSchema } from "@/app/validationSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
@@ -26,6 +27,7 @@ export default function NewIssuePage() {
   });
   const router = useRouter();
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <div className="max-w-xl">
@@ -41,11 +43,14 @@ export default function NewIssuePage() {
       <form
         className="space-y-3"
         onSubmit={handleSubmit(async (data) => {
+          setIsSubmitting(true);
           try {
             await axios.post("/api/issues", data);
             router.push("/issues");
+            setIsSubmitting(false);
           } catch (error) {
             setError("An unexpected error occurred!");
+            setIsSubmitting(false);
           }
         })}
       >
@@ -63,7 +68,9 @@ export default function NewIssuePage() {
         />
         <ErrorMessage>{errors.description?.message}</ErrorMessage>
 
-        <Button>Submit New Issue</Button>
+        <Button disabled={isSubmitting} type="submit">
+          Submit New Issue {isSubmitting && <Spinner />}
+        </Button>
       </form>
     </div>
   );
