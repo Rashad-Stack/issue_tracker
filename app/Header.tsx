@@ -1,12 +1,15 @@
 "use client";
 
+import { Box } from "@radix-ui/themes";
 import classNames from "classnames";
+import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HiOutlineBugAnt } from "react-icons/hi2";
 
 export default function Header() {
   const currentPath = usePathname();
+  const { data: session, status } = useSession();
 
   return (
     <header className="mb-5 border-b">
@@ -30,6 +33,23 @@ export default function Header() {
             </li>
           ))}
         </ul>
+        <Box>
+          {status === "authenticated" ? (
+            <Link
+              href="/api/auth/signout"
+              className="text-zinc-500 transition-colors hover:text-zinc-800"
+            >
+              Sign out
+            </Link>
+          ) : (
+            <Link
+              href="/api/auth/signin"
+              className="text-zinc-500 transition-colors hover:text-zinc-800"
+            >
+              Sign in
+            </Link>
+          )}
+        </Box>
       </nav>
     </header>
   );
