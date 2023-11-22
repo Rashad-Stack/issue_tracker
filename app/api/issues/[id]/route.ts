@@ -1,5 +1,5 @@
 import authOptions from "@/app/auth/authOptions";
-import { issueSchema } from "@/app/validationSchemas";
+import { issueSchema, patchIssueSchema } from "@/app/validationSchemas";
 import prisma from "@/prisma/client";
 import statusCodes from "http-status-codes";
 import { getServerSession } from "next-auth";
@@ -20,12 +20,31 @@ export async function PATCH(
     );
   }
   const body = await request.json();
-  const validation = issueSchema.safeParse(body);
+  const validation = patchIssueSchema.safeParse(body);
 
   if (!validation.success) {
     return NextResponse.json(validation.error.format(), {
       status: statusCodes.BAD_REQUEST,
     });
+  }
+
+  const { assignedToUserId, description, title } = body;
+
+  if (assignedToUserId) {
+    const user = await prisma.user.findUnique({
+      where: {
+        id: assignedToUserId,
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Invalid user" },
+        {
+          status: statusCodes.BAD_REQUEST,
+        },
+      );
+    }
   }
 
   const issue = await prisma.issue.findUnique({
@@ -36,9 +55,9 @@ export async function PATCH(
 
   if (!issue) {
     return NextResponse.json(
-      { error: "Issue not found" },
+      { error: "Invalid issue" },
       {
-        status: statusCodes.NOT_FOUND,
+        status: statusCodes.BAD_REQUEST,
       },
     );
   }
@@ -48,8 +67,9 @@ export async function PATCH(
       id: parseInt(params.id),
     },
     data: {
-      title: validation.data.title,
-      description: validation.data.description,
+      title,
+      description,
+      assignedToUserId,
     },
   });
 
