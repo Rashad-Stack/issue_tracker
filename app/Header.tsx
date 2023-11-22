@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { HiOutlineBugAnt } from "react-icons/hi2";
+import { Skeleton } from "@/app/components";
 
 export default function Header() {
   return (
@@ -63,7 +64,8 @@ function NavLinks() {
 const AuthAccess = () => {
   const { data: session, status } = useSession();
 
-  if (status === "loading") return null;
+  if (status === "loading")
+    return <Skeleton width="2rem" height="2rem" circle={true} />;
   if (status === "unauthenticated")
     return <Link href="/api/auth/signin">Sign in</Link>;
 
