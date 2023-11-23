@@ -1,10 +1,10 @@
 "use client";
 
+import Skeleton from "@/app/components/Skeleton";
 import { Issue, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import Skeleton from "@/app/components/Skeleton";
 import toast, { Toaster } from "react-hot-toast";
 
 export default function AssigneeSelect({ issue }: { issue: Issue }) {
@@ -26,22 +26,24 @@ export default function AssigneeSelect({ issue }: { issue: Issue }) {
 
   if (isError) return null;
 
+  const assignIssue = (userId: string) => {
+    const assignee = () =>
+      axios.patch(`/api/issues/${issue.id}`, {
+        assignedToUserId: userId === "unassigned" ? null : userId,
+      });
+
+    toast.promise(assignee(), {
+      loading: "processing",
+      success: "done.",
+      error: "failed.",
+    });
+  };
+
   return (
     <>
       <Select.Root
         defaultValue={issue?.assignedToUserId || "unassigned"}
-        onValueChange={(userId) => {
-          const assignee = () =>
-            axios.patch(`/api/issues/${issue.id}`, {
-              assignedToUserId: userId === "unassigned" ? null : userId,
-            });
-
-          toast.promise(assignee(), {
-            loading: "processing",
-            success: "done.",
-            error: "failed.",
-          });
-        }}
+        onValueChange={assignIssue}
       >
         <Select.Trigger placeholder="Assignee..." />
         <Select.Content>
