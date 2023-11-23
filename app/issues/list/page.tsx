@@ -1,4 +1,5 @@
 import { IssueStatusBadge, Link } from "@/app/components";
+import Pagination from "@/app/components/Pagination";
 import prisma from "@/prisma/client";
 import { Issue, Status } from "@prisma/client";
 import { ArrowUpIcon } from "@radix-ui/react-icons";
@@ -79,6 +80,7 @@ export default async function IssuesPage({ searchParams }: Props) {
           ))}
         </Table.Body>
       </Table.Root>
+      <Pagination itemCount={issues.length} pageSize={2} currentPage={5} />
     </div>
   );
 }
