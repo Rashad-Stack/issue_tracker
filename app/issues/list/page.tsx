@@ -1,11 +1,13 @@
 import { IssueStatusBadge, Link } from "@/app/components";
 import prisma from "@/prisma/client";
-import { Status } from "@prisma/client";
+import { Issue, Status } from "@prisma/client";
+import { ArrowUpIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
+import NextLink from "next/link";
 import IssueAction from "./issueAction";
 
 interface Props {
-  searchParams: { status: Status };
+  searchParams: { status: Status; orderBy: keyof Issue };
 }
 
 export default async function IssuesPage({ searchParams }: Props) {
@@ -27,13 +29,26 @@ export default async function IssuesPage({ searchParams }: Props) {
       <Table.Root variant="surface">
         <Table.Header>
           <Table.Row>
-            <Table.ColumnHeaderCell>Issus</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="max-md:hidden">
-              Status
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className="max-md:hidden">
-              Created
-            </Table.ColumnHeaderCell>
+            {columns.map((column) => (
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column?.classNames}
+              >
+                <NextLink
+                  href={{
+                    query: {
+                      ...searchParams,
+                      orderBy: column.value,
+                    },
+                  }}
+                >
+                  {column.label}
+                </NextLink>
+                {column.value === searchParams.orderBy && (
+                  <ArrowUpIcon className="inline" />
+                )}
+              </Table.ColumnHeaderCell>
+            ))}
           </Table.Row>
         </Table.Header>
         <Table.Body>
@@ -60,3 +75,20 @@ export default async function IssuesPage({ searchParams }: Props) {
 }
 
 export const dynamic = "force-dynamic";
+
+const columns: { label: string; value: keyof Issue; classNames?: string }[] = [
+  {
+    label: "Issus",
+    value: "title",
+  },
+  {
+    label: "Status",
+    value: "status",
+    classNames: "max-md:hidden",
+  },
+  {
+    label: "Created",
+    value: "createdAt",
+    classNames: "max-md:hidden",
+  },
+];
