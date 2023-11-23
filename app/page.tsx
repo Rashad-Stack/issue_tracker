@@ -1,5 +1,5 @@
-import Image from "next/image";
+import LatestIssues from "./LatestIssues";
 
 export default function Home() {
-  return <main>Hello world</main>;
+  return <LatestIssues />;
 }
