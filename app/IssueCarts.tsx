@@ -12,11 +12,11 @@ interface Props {
 export default function IssueCarts({ open, closed, inProgress }: Props) {
   const data = [
     {
-      label: "Open",
+      label: "Open Issues",
       value: open,
     },
-    { label: "Closed", value: closed },
-    { label: "In Progress", value: inProgress },
+    { label: "Closed Issues", value: closed },
+    { label: "In Progress Issues", value: inProgress },
   ];
 
   return (
