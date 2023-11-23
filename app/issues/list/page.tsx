@@ -8,7 +8,7 @@ import NextLink from "next/link";
 import IssueAction from "./issueAction";
 
 interface Props {
-  searchParams: { status: Status; orderBy: keyof Issue };
+  searchParams: { status: Status; orderBy: keyof Issue; page: string };
 }
 
 export default async function IssuesPage({ searchParams }: Props) {
@@ -80,7 +80,11 @@ export default async function IssuesPage({ searchParams }: Props) {
           ))}
         </Table.Body>
       </Table.Root>
-      <Pagination itemCount={issues.length} pageSize={2} currentPage={5} />
+      <Pagination
+        itemCount={issues.length}
+        pageSize={2}
+        currentPage={parseInt(searchParams.page)}
+      />
     </div>
   );
 }
